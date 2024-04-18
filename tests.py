@@ -6,38 +6,17 @@ from main import BooksCollector
 # обязательно указывать префикс Test
 class TestBooksCollector:
 
-    # пример теста:
-    # обязательно указывать префикс test_
-    # дальше идет название метода, который тестируем add_new_book_
-    # затем, что тестируем add_two_books - добавление двух книг
+    # поверка на добавление нескольких книг
     def test_add_new_book_add_two_books(self):
-        # создаем экземпляр (объект) класса BooksCollector
         collector = BooksCollector()
 
-        # добавляем две книги
         collector.add_new_book('Гордость и предубеждение и зомби')
         collector.add_new_book('Что делать, если ваш кот хочет вас убить')
-
-        # проверяем, что добавилось именно две
         assert collector.get_books_genre() == {'Гордость и предубеждение и зомби': '',
                                               'Что делать, если ваш кот хочет вас убить': ''}
 
     # напиши свои тесты ниже
     # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
-
-    #добавляем книгу с названием в 41 символ
-    #def test_add_new_book_name_41_symbols(self):
-        #collector = BooksCollector()
-
-       #collector.add_new_book('Удивительное путешествие Нильса Хольгерсс')
-        #assert collector.get_books_genre() == {}
-
-    #добавляем книгу без названия
-    #def test_add_new_book_without_name(self):
-        #collector = BooksCollector()
-
-        #collector.add_new_book('')
-        #assert collector.get_books_genre() == {}
 
     #добавляем уже добавленную книгу
     def test_add_new_book_already_added_book(self):
@@ -49,9 +28,69 @@ class TestBooksCollector:
         assert collector.get_books_genre() == {'Гордость и предубеждение': ''}
 
     #не добавляются книги вне диапазона(название)
-    @pytest.mark.parametrize('name', ['', 'Удивительное путешествие Нильса Хольгерсс'])
-    def test_add_new_book(self, name):
+    @pytest.mark.parametrize('name', ['',
+                                      'Удивительное путешествие Нильса Хольгерсс',
+                                      'Удивительное путешествие Нильса Хольгерссона с дикими гусями по Швеции'])
+    def test_add_new_book_name_out_of_range(self, name, books_collection):
+        books_collection.add_new_book(name)
+        assert len(books_collection.get_books_genre()) == 0
+
+    #добавляются книги из дипазона(название)
+    #@pytest.mark.parametrize('name', ['К югу от границы',
+                                      #'Любовь — как роза, красива, но шипы больны',
+                                      #'Я'])
+    #def test_add_new_book_name_in_the_range(self, name, books_collection):
+        #books_collection.add_new_book(name)
+        #assert name in books_collection.books_genre
+
+    #устанавливаем жанр книге
+    def test_set_book_genre_to_existing_book(self):
+        collector = BooksCollector()
+
+        collector.add_new_book('Гордость и предубеждение')
+        collector.set_book_genre('Гордость и предубеждение', 'Фантастика')
+        assert collector.get_books_genre() == {'Гордость и предубеждение': 'Фантастика'}
+
+    #проверяем, что нельзя установить жанр книге, которой нет в books_genre
+    def test_set_book_genre_to_not_existing_book(self):
+        collector = BooksCollector()
+
+        collector.set_book_genre('Гордость и предубеждение', 'Фантастика')
+        assert collector.get_books_genre() == {}
+
+    #проверяем, что нельзя добавить жанр вне списка книге из books_genre
+    def test_set_book_genre_to_not_existing_genre(self):
+        collector = BooksCollector()
+
+        collector.add_new_book('Гордость и предубеждение')
+        collector.set_book_genre('Гордость и предубеждение', 'Трагикомедии')
+        assert collector.get_books_genre() == {'Гордость и предубеждение': ''}
+
+    #проверяем, что нельзя добавить несуществующий жанр к книге вне books_genre
+    def test_set_book_genre_to_not_existing_book_not_existing_genre(self):
+        collector = BooksCollector()
+
+        collector.set_book_genre('Гордость и предубеждение', 'Трагикомедии')
+        assert collector.get_books_genre() == {}
+
+    #вывод жанра книги по имени
+    @pytest.mark.parametrize('name, genre', [('Гордость и предубеждение и зомби', 'Ужасы'),
+                                             ('Что делать, если ваш кот хочет вас убить', 'Комедии')])
+    def test_get_book_genre_by_name(self, name, genre):
         collector = BooksCollector()
 
         collector.add_new_book(name)
-        assert collector.get_books_genre() == {}
+        collector.set_book_genre(name, genre)
+        assert collector.get_book_genre(name)  == genre
+
+    #вывод книг по жанру
+    def test_get_books_with_specific_genre_by_genre(self, my_books_collection):
+        assert my_books_collection.get_books_with_specific_genre('Мультфильмы') == ['Гадкий Я']
+
+    #вывод книг по несуществующему жанру
+    def test_get_books_with_specific_genre_by_wrong_genre(self, my_books_collection):
+        assert len(my_books_collection.get_books_with_specific_genre('Трагикомедии')) == 0
+
+    #вывод дестких книг
+    def test_get_books_for_children(self, my_books_collection):
+        assert len(my_books_collection.get_books_for_children()) == 3 and my_books_collection.get_books_for_children() == ['Симбиоз', 'Гадкий Я', 'Ревизор']
