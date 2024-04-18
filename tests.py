@@ -119,9 +119,9 @@ class TestBooksCollector:
     # удалить из избранного книгу не из избранного
     def test_delete_book_from_favorites_deleted_book(self, my_books_collection):
         my_books_collection.add_book_in_favorites('Симбиоз')
-        my_books_collection.delete_book_from_favorites('Симбиоз')
+        my_books_collection.delete_book_from_favorites('Гадкий Я')
 
-        assert len(my_books_collection.get_list_of_favorites_books()) == 0 and 'Симбиоз' not in my_books_collection.get_list_of_favorites_books()
+        assert len(my_books_collection.get_list_of_favorites_books()) == 1 and 'Гадкий Я' not in my_books_collection.get_list_of_favorites_books()
 
     #получить список избранных книг
     def test_get_list_of_favorites_books(self, my_books_collection):
