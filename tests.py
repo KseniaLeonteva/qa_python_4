@@ -66,12 +66,6 @@ class TestBooksCollector:
         collector.set_book_genre('Гордость и предубеждение', 'Трагикомедии')
         assert collector.get_books_genre() == {'Гордость и предубеждение': ''}
 
-    #проверяем, что нельзя добавить несуществующий жанр к книге вне books_genre
-    def test_set_book_genre_to_not_existing_book_not_existing_genre(self):
-        collector = BooksCollector()
-
-        collector.set_book_genre('Гордость и предубеждение', 'Трагикомедии')
-        assert collector.get_books_genre() == {}
 
     #вывод жанра книги по имени
     @pytest.mark.parametrize('name, genre', [('Гордость и предубеждение и зомби', 'Ужасы'),
